@@ -8,7 +8,7 @@
       :root {
         --bg: #000000;
         --text: #ffffff;
-        --muted: #555;
+        --muted: #444;
         --accent: #ff3b3b;
         --title-grad: linear-gradient(90deg, #ffffff 0%, #333333 100%);
       }
@@ -28,7 +28,7 @@
         overflow: hidden;
       }
 
-      /* PHOTO-ACCURATE BACKGROUND & VIGNETTE */
+      /* PHOTO-STYLE BACKGROUND */
       .bg-layer {
         position: fixed;
         inset: 0;
@@ -54,11 +54,6 @@
         justify-content: space-between;
         padding: 0 60px;
         z-index: 100;
-        background: linear-gradient(
-          180deg,
-          rgba(0, 0, 0, 1) 0%,
-          transparent 100%
-        );
       }
 
       .brand {
@@ -68,6 +63,9 @@
         font-size: 1.3rem;
         font-weight: 800;
         letter-spacing: -1px;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
       }
 
       .nav-links {
@@ -100,16 +98,11 @@
         align-items: center;
         gap: 10px;
         transition: 0.3s;
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
       }
-      .play-now-btn:hover:not(:disabled) {
+      .play-now-btn:hover {
         background: #fff;
         color: #000;
-        box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
-      }
-      .play-now-btn:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
       }
 
       /* ================= SCREENS ================= */
@@ -123,6 +116,7 @@
         text-align: center;
         padding: 40px;
         z-index: 50;
+        background: rgba(0, 0, 0, 0.8);
       }
       .hidden {
         display: none !important;
@@ -142,16 +136,15 @@
       .hero-sub {
         max-width: 500px;
         color: #666;
-        line-height: 1.6;
         font-size: 0.95rem;
         margin-bottom: 40px;
       }
 
-      /* ================= GAME ELEMENTS ================= */
+      /* ================= GAME BOARD ================= */
       #game-container {
         position: absolute;
-        top: 100px; /* Below Navbar */
-        bottom: 40px;
+        top: 100px;
+        bottom: 80px;
         left: 40px;
         right: 40px;
         display: flex;
@@ -161,6 +154,8 @@
 
       canvas {
         image-rendering: pixelated;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
       }
 
       .hud {
@@ -178,23 +173,17 @@
       .pause-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         z-index: 150;
       }
-      .pause-text {
-        font-size: 4rem;
-        font-weight: 900;
-        letter-spacing: 15px;
-        margin-bottom: 10px;
-      }
 
       .countdown {
-        font-size: 5rem;
+        font-size: 6rem;
         font-weight: 900;
         color: #fff;
       }
@@ -203,11 +192,12 @@
         position: fixed;
         top: 110px;
         right: 60px;
-        border: 1px solid #fff;
+        background: #fff;
+        color: #000;
         padding: 4px 12px;
         font-size: 0.6rem;
         border-radius: 4px;
-        font-weight: 700;
+        font-weight: 800;
         z-index: 100;
       }
     </style>
@@ -216,44 +206,34 @@
     <div class="bg-layer"></div>
 
     <div class="navbar">
-      <div class="brand">Naga</div>
+      <a href="#" class="brand" onclick="location.reload()">Naga</a>
       <div class="nav-links">
-        <button onclick="showScreen('how')">How to play</button>
-        <button onclick="showScreen('leaderboard')">Leaderboard</button>
-        <button onclick="showScreen('about')">About</button>
+        <button onclick="showScreen('start')">Home</button>
+        <button
+          onclick="alert('Avoid walls. Eat Red. Use P to cycle Speed Hacks.')"
+        >
+          Help
+        </button>
       </div>
-      <button class="play-now-btn" id="navPlayBtn" onclick="startGame()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-        Play Now
-      </button>
+      <button class="play-now-btn" onclick="startGame()">▶ Play Now</button>
     </div>
 
     <div class="screen" id="start">
       <h1 class="hero-title">You Grew Up. Snake<br />Didn't. Play It Again.</h1>
-      <p class="hero-sub">
-        No fluff, no noise. Just you, the grid, and the growing tail.
-      </p>
+      <p class="hero-sub">The classic instinct, refined for the modern eye.</p>
       <button
         class="play-now-btn"
         style="padding: 15px 35px"
         onclick="startGame()"
       >
-        ▶ Start Engine
+        ▶ Start Game
       </button>
     </div>
 
     <div class="screen hidden" id="over">
-      <h1 class="hero-title">Defeat.</h1>
+      <h1 class="hero-title">Game Over</h1>
       <p id="final-score" class="hero-sub"></p>
-      <button
-        class="play-now-btn"
-        style="padding: 15px 35px"
-        onclick="startGame()"
-      >
-        Try Again
-      </button>
+      <p style="color: #444; font-size: 0.8rem">Press SPACE to restart</p>
     </div>
 
     <div id="game-container">
@@ -263,21 +243,22 @@
     <div class="hud" id="hud"></div>
 
     <div class="pause-overlay hidden" id="pauseOverlay">
-      <div class="pause-text" id="pauseLabel">PAUSED</div>
-      <div class="countdown hidden" id="timer">3</div>
+      <div class="countdown" id="timer">3</div>
     </div>
 
-    <div id="dev-tag" class="dev-badge hidden">DEV MODE ENABLED</div>
+    <div id="dev-tag" class="dev-badge hidden">DEV: SLOW-MO</div>
 
     <script>
       const canvas = document.getElementById("game");
       const ctx = canvas.getContext("2d");
 
-      let snake, dir, food, loop, score;
-      let speed = 120;
+      let snake, dir, food, loop, score, level;
+      let baseSpeed = 120;
+      let currentSpeed = 120;
       let paused = false;
-      let devMode = false;
+      let pCycle = 0; // 0: Normal, 1: Slomo, 2: Mid, 3: Normal
       let isCountingDown = false;
+      let eatFlash = 0;
       let pr = localStorage.getItem("naga_pr") || 0;
 
       const GRID_X = 40;
@@ -285,10 +266,10 @@
 
       function resize() {
         const container = document.getElementById("game-container");
-        const availableW = container.clientWidth;
-        const availableH = container.clientHeight;
-        const cellSize = Math.min(availableW / GRID_X, availableH / GRID_Y);
-
+        const cellSize = Math.min(
+          container.clientWidth / GRID_X,
+          container.clientHeight / GRID_Y,
+        );
         canvas.width = cellSize * GRID_X;
         canvas.height = cellSize * GRID_Y;
       }
@@ -311,25 +292,26 @@
           { x: 8, y: 10 },
         ];
         dir = { x: 1, y: 0 };
-        food = { x: 20, y: 10 };
+        food = { x: 25, y: 10 };
         score = 0;
-        speed = 120;
+        level = 1;
+        baseSpeed = 120;
+        currentSpeed = 120;
+        pCycle = 0;
         paused = false;
-        devMode = false;
-        document.getElementById("pauseOverlay").classList.add("hidden");
         document.getElementById("dev-tag").classList.add("hidden");
-        document.getElementById("navPlayBtn").disabled = false;
         resetInterval();
       }
 
       function resetInterval() {
         clearInterval(loop);
-        loop = setInterval(tick, speed);
+        loop = setInterval(tick, currentSpeed);
       }
 
       function tick() {
         if (paused || isCountingDown) return;
         const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
         if (
           head.x < 0 ||
           head.x >= GRID_X ||
@@ -340,17 +322,25 @@
           return endGame();
 
         snake.unshift(head);
+
         if (head.x === food.x && head.y === food.y) {
           score++;
-          if (!devMode) {
-            speed = Math.max(50, speed - 2);
+          eatFlash = 10; // Trigger glow
+
+          // Level Up every 5 food
+          if (score % 5 === 0) {
+            level++;
+            baseSpeed = Math.max(40, baseSpeed - 5);
+            if (pCycle === 0) currentSpeed = baseSpeed;
             resetInterval();
           }
+
           food = {
             x: Math.floor(Math.random() * GRID_X),
             y: Math.floor(Math.random() * GRID_Y),
           };
         } else snake.pop();
+
         draw();
       }
 
@@ -359,68 +349,92 @@
         const cw = canvas.width / GRID_X;
         const ch = canvas.height / GRID_Y;
 
-        // Draw Dot Grid with Spaces
-        ctx.fillStyle = "rgba(255,255,255,0.03)";
+        // Background Pulse on Eat
+        if (eatFlash > 0) {
+          ctx.fillStyle = `rgba(255,255,255,${eatFlash / 100})`;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          eatFlash--;
+        }
+
+        // Draw Dot Grid
         for (let i = 0; i < GRID_X; i++) {
           for (let j = 0; j < GRID_Y; j++) {
+            // Radial fade logic for edges
+            const distToEdge = Math.min(i, GRID_X - i, j, GRID_Y - j);
+            const edgeAlpha = Math.min(0.04, distToEdge * 0.01);
+            ctx.fillStyle = `rgba(255,255,255,${edgeAlpha})`;
             ctx.fillRect(i * cw + 2, j * ch + 2, cw - 4, ch - 4);
           }
         }
 
-        // Food
+        // Food with Glow
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "red";
         ctx.fillStyle = "#ff3b3b";
         ctx.fillRect(food.x * cw + 2, food.y * ch + 2, cw - 4, ch - 4);
+        ctx.shadowBlur = 0;
 
         // Snake with Tail Fade
         snake.forEach((s, i) => {
-          const opacity = 1 - i / (snake.length + 2);
-          ctx.fillStyle = `rgba(255,255,255,${opacity})`;
-          ctx.fillRect(s.x * cw + 1, s.y * ch + 1, cw - 2, ch - 2);
+          const opacity = 1 - i / (snake.length + 5);
+          ctx.fillStyle = i === 0 ? "#fff" : `rgba(255,255,255,${opacity})`;
+          // Head grows slightly when eating
+          const padding = i === 0 && eatFlash > 0 ? 0 : 2;
+          ctx.fillRect(
+            s.x * cw + padding,
+            s.y * ch + padding,
+            cw - padding * 2,
+            ch - padding * 2,
+          );
         });
 
         document.getElementById("hud").innerText =
-          `SCORE ${score}  —  BEST ${pr} ${devMode ? ` — DEV SPEED ${speed}ms` : ""}`;
+          `LEVEL ${level}  —  SCORE ${score}  —  BEST ${pr} ${pCycle > 0 ? " (DEV ACTIVE)" : ""}`;
       }
 
-      function togglePause(isDev = false) {
+      function handlePCycle() {
+        pCycle = (pCycle + 1) % 4;
+        const tag = document.getElementById("dev-tag");
+
+        if (pCycle === 0) {
+          currentSpeed = baseSpeed;
+          tag.classList.add("hidden");
+        } else if (pCycle === 1) {
+          currentSpeed = 500; // Slomo
+          tag.innerText = "DEV: SLOW-MO";
+          tag.classList.remove("hidden");
+        } else if (pCycle === 2) {
+          currentSpeed = 300; // Mid
+          tag.innerText = "DEV: MID-MO";
+        } else if (pCycle === 3) {
+          currentSpeed = 150; // Near Normal
+          tag.innerText = "DEV: FAST-MO";
+        }
+        resetInterval();
+      }
+
+      function togglePause() {
         if (paused) {
-          startCountdown();
+          isCountingDown = true;
+          const timerEl = document.getElementById("timer");
+          document.getElementById("pauseOverlay").classList.remove("hidden");
+          let count = 3;
+          timerEl.innerText = count;
+          const interval = setInterval(() => {
+            count--;
+            if (count > 0) timerEl.innerText = count;
+            else {
+              clearInterval(interval);
+              paused = false;
+              isCountingDown = false;
+              document.getElementById("pauseOverlay").classList.add("hidden");
+            }
+          }, 500);
         } else {
           paused = true;
-          if (isDev) {
-            devMode = true;
-            speed = 400; // Auto-slow for dev
-            resetInterval();
-            document.getElementById("dev-tag").classList.remove("hidden");
-          }
           document.getElementById("pauseOverlay").classList.remove("hidden");
-          document.getElementById("pauseLabel").classList.remove("hidden");
-          document.getElementById("timer").classList.add("hidden");
-          document.getElementById("navPlayBtn").disabled = true;
+          document.getElementById("timer").innerText = "PAUSED";
         }
-      }
-
-      function startCountdown() {
-        isCountingDown = true;
-        document.getElementById("pauseLabel").classList.add("hidden");
-        const timerEl = document.getElementById("timer");
-        timerEl.classList.remove("hidden");
-        let count = 3;
-        timerEl.innerText = count;
-
-        const interval = setInterval(() => {
-          count--;
-          if (count > 0) {
-            timerEl.innerText = count;
-          } else {
-            clearInterval(interval);
-            paused = false;
-            isCountingDown = false;
-            document.getElementById("pauseOverlay").classList.add("hidden");
-            document.getElementById("navPlayBtn").disabled = false;
-            resetInterval();
-          }
-        }, 600);
       }
 
       function endGame() {
@@ -430,24 +444,23 @@
           localStorage.setItem("naga_pr", pr);
         }
         document.getElementById("final-score").innerText =
-          `Score ${score} · Best ${pr}`;
+          `Level ${level} · Score ${score} · Record ${pr}`;
         showScreen("over");
       }
 
       window.addEventListener("keydown", (e) => {
         const k = e.key.toLowerCase();
-        if (k === "p") togglePause(true);
-        if (k === "escape" || k === " " || k === "enter") togglePause(false);
 
-        if (devMode && !paused) {
-          if (k === "[") {
-            speed += 50;
-            resetInterval();
-          }
-          if (k === "]") {
-            speed = Math.max(10, speed - 50);
-            resetInterval();
-          }
+        if (k === "p") handlePCycle();
+        if (k === "escape") togglePause();
+
+        // Restart on Space/Enter when Game Over
+        if (
+          (e.key === " " || e.key === "Enter") &&
+          !document.getElementById("over").classList.contains("hidden")
+        ) {
+          startGame();
+          return;
         }
 
         if ((k === "arrowup" || k === "w") && dir.y === 0)
