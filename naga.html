@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <title>NAGA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <style>
       :root {
         --bg: #050505;
@@ -14,7 +13,6 @@
         --muted: #888;
         --food: #ff3b3b;
       }
-
       * {
         box-sizing: border-box;
         font-family:
@@ -23,7 +21,6 @@
           -apple-system,
           sans-serif;
       }
-
       html,
       body {
         margin: 0;
@@ -31,7 +28,6 @@
         background: black;
         overflow: hidden;
       }
-
       /* ================= NAVBAR ================= */
       .navbar {
         position: fixed;
@@ -45,7 +41,6 @@
         padding: 0 32px;
         z-index: 20;
       }
-
       .brand {
         font-size: 1.4rem;
         font-weight: 900;
@@ -54,12 +49,10 @@
         -webkit-background-clip: text;
         color: transparent;
       }
-
       .nav-center {
         display: flex;
         gap: 26px;
       }
-
       .nav-center button {
         background: none;
         border: none;
@@ -70,7 +63,6 @@
       .nav-center button:hover {
         color: white;
       }
-
       .play-now {
         padding: 10px 18px;
         border-radius: 12px;
@@ -83,7 +75,6 @@
       .play-now:hover {
         box-shadow: 0 0 28px rgba(255, 255, 255, 0.35);
       }
-
       /* ================= SCREENS ================= */
       .screen {
         position: fixed;
@@ -96,12 +87,10 @@
       .hidden {
         display: none;
       }
-
       .page {
         text-align: center;
         padding: 40px;
       }
-
       .title {
         font-size: clamp(3rem, 6vw, 5rem);
         font-weight: 900;
@@ -110,14 +99,12 @@
         -webkit-background-clip: text;
         color: transparent;
       }
-
       .subtitle {
         margin-top: 20px;
         max-width: 520px;
         line-height: 1.7;
         color: #aaa;
       }
-
       .btn {
         margin-top: 40px;
         padding: 16px 30px;
@@ -128,13 +115,11 @@
         cursor: pointer;
         box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
       }
-
       /* ================= GAME ================= */
       canvas {
         position: fixed;
         inset: 0;
       }
-
       .hud {
         position: fixed;
         top: 80px;
@@ -145,7 +130,6 @@
         color: white;
         opacity: 0.9;
       }
-
       /* Pause (NO BLUR) */
       .pause {
         position: fixed;
@@ -157,7 +141,6 @@
         background: rgba(0, 0, 0, 0.55);
         z-index: 15;
       }
-
       /* Dev badge */
       .dev {
         position: fixed;
@@ -171,7 +154,6 @@
         color: #aaa;
         display: none;
       }
-
       /* Mobile block */
       .mobile {
         position: fixed;
@@ -189,7 +171,6 @@
         -webkit-background-clip: text;
         color: transparent;
       }
-
       /* Game over */
       .over h1 {
         font-size: 4rem;
@@ -199,7 +180,6 @@
       }
     </style>
   </head>
-
   <body>
     <!-- MOBILE BLOCK -->
     <div class="mobile" id="mobile">
@@ -208,7 +188,6 @@
         <p style="color: #777">Keyboard experience only.</p>
       </div>
     </div>
-
     <!-- NAVBAR -->
     <div class="navbar">
       <div class="brand">NAGA</div>
@@ -220,7 +199,6 @@
       </div>
       <button class="play-now" onclick="startGame()">Play Now</button>
     </div>
-
     <!-- START -->
     <div class="screen" id="start">
       <div class="page">
@@ -232,7 +210,6 @@
         <button class="btn" onclick="startGame()">▶ Play Now</button>
       </div>
     </div>
-
     <!-- HOW -->
     <div class="screen hidden" id="how">
       <div class="page">
@@ -246,7 +223,6 @@
         <button class="btn" onclick="showScreen('start')">Back to Play</button>
       </div>
     </div>
-
     <!-- LEADER -->
     <div class="screen hidden" id="leader">
       <div class="page">
@@ -258,7 +234,6 @@
         <button class="btn" onclick="showScreen('start')">Back to Play</button>
       </div>
     </div>
-
     <!-- ABOUT -->
     <div class="screen hidden" id="about">
       <div class="page">
@@ -277,13 +252,11 @@
         <button class="btn" onclick="showScreen('start')">Back to Play</button>
       </div>
     </div>
-
     <!-- GAME -->
     <canvas id="game"></canvas>
     <div class="hud" id="hud"></div>
     <div class="pause hidden" id="pause">Paused</div>
     <div class="dev" id="dev">DEV MODE</div>
-
     <!-- GAME OVER -->
     <div class="screen hidden over" id="over">
       <div class="page">
@@ -292,13 +265,11 @@
         <button class="btn" onclick="startGame()">Try Again</button>
       </div>
     </div>
-
     <script>
       /* MOBILE BLOCK */
       if (innerWidth < 768) {
         document.getElementById("mobile").style.display = "flex";
       }
-
       /* CANVAS */
       const canvas = document.getElementById("game");
       const ctx = canvas.getContext("2d");
@@ -308,14 +279,12 @@
       }
       resize();
       addEventListener("resize", resize);
-
       /* STATE */
       const GRID = 24;
       let snake, dir, food, loop, speed, score;
       let paused = false,
         dev = false;
       let pr = Number(localStorage.getItem("naga_pr")) || 0;
-
       /* SCREEN CONTROL */
       function showScreen(id) {
         document
@@ -323,7 +292,6 @@
           .forEach((s) => s.classList.add("hidden"));
         document.getElementById(id).classList.remove("hidden");
       }
-
       /* START GAME */
       function startGame() {
         showScreen("game");
@@ -338,7 +306,6 @@
         clearInterval(loop);
         loop = setInterval(tick, speed);
       }
-
       /* LOOP */
       function tick() {
         if (paused) return;
@@ -359,20 +326,17 @@
         } else snake.pop();
         draw();
       }
-
       /* DRAW */
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const size = Math.min(canvas.width, canvas.height) / GRID;
         const ox = (canvas.width - size * GRID) / 2;
         const oy = (canvas.height - size * GRID) / 2;
-
         for (let x = 0; x < GRID; x++)
           for (let y = 0; y < GRID; y++) {
             ctx.fillStyle = `rgb(${14 + y},${14 + y},${14 + y})`;
             ctx.fillRect(ox + x * size, oy + y * size, size - 1, size - 1);
           }
-
         const fx = ox + food.x * size + size / 2;
         const fy = oy + food.y * size + size / 2;
         const g = ctx.createRadialGradient(fx, fy, 0, fx, fy, size * 2);
@@ -380,17 +344,14 @@
         g.addColorStop(1, "transparent");
         ctx.fillStyle = g;
         ctx.fillRect(fx - size * 2, fy - size * 2, size * 4, size * 4);
-
         snake.forEach((s, i) => {
           const t = i / snake.length;
           ctx.fillStyle = `rgb(${255 - 120 * t},${255 - 120 * t},${255 - 120 * t})`;
           ctx.fillRect(ox + s.x * size, oy + s.y * size, size - 1, size - 1);
         });
-
         document.getElementById("hud").innerText =
           `Score ${score} · PR ${pr}${dev ? " · DEV" : ""}`;
       }
-
       /* HELPERS */
       function spawnFood() {
         let p;
@@ -402,7 +363,6 @@
         } while (snake.some((s) => s.x === p.x && s.y === p.y));
         return p;
       }
-
       function endGame() {
         clearInterval(loop);
         if (score > pr) {
@@ -413,23 +373,30 @@
           `Score ${score} · Personal Record ${pr}`;
         showScreen("over");
       }
-
       /* INPUT */
       addEventListener("keydown", (e) => {
-        if (e.key === "Escape" || e.key === "Enter") {
+        // Pause with ESC / Enter / P in dev mode
+        if (
+          e.key === "Escape" ||
+          e.key === "Enter" ||
+          (dev && e.key.toLowerCase() === "p")
+        ) {
           paused = !paused;
           document.getElementById("pause").classList.toggle("hidden", !paused);
         }
+        // Toggle dev mode
+        if (e.key.toLowerCase() === "p" && !paused) {
+          dev = !dev;
+          document.getElementById("dev").style.display = dev ? "block" : "none";
+        }
+        // Restart game on space if game over
         if (
           e.key === " " &&
           !document.getElementById("over").classList.contains("hidden")
         ) {
           startGame();
         }
-        if (e.key.toLowerCase() === "p") {
-          dev = !dev;
-          document.getElementById("dev").style.display = dev ? "block" : "none";
-        }
+        // Arrow/WASD controls
         if ((e.key === "ArrowUp" || e.key === "w") && dir.y !== 1)
           dir = { x: 0, y: -1 };
         if ((e.key === "ArrowDown" || e.key === "s") && dir.y !== -1)
@@ -438,6 +405,20 @@
           dir = { x: -1, y: 0 };
         if ((e.key === "ArrowRight" || e.key === "d") && dir.x !== -1)
           dir = { x: 1, y: 0 };
+
+        // Dev speed control
+        if (dev) {
+          if (e.key === "+") {
+            speed = Math.max(10, speed - 10);
+            clearInterval(loop);
+            loop = setInterval(tick, speed);
+          }
+          if (e.key === "-") {
+            speed += 10;
+            clearInterval(loop);
+            loop = setInterval(tick, speed);
+          }
+        }
       });
     </script>
   </body>
