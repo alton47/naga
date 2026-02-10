@@ -9,12 +9,14 @@
       :root {
         --bg: #050505;
         --grid-dark: #0b0b0b;
-        --grid-light: #161616;
-        --white: #ffffff;
-        --muted: #888;
+        --grid-light: #181818;
+        --text: #f5f5f5;
+        --muted: #8a8a8a;
         --food: #ff3b3b;
+        --glow: rgba(255, 255, 255, 0.25);
       }
 
+      /* RESET */
       * {
         box-sizing: border-box;
         font-family:
@@ -23,7 +25,6 @@
           -apple-system,
           sans-serif;
       }
-
       html,
       body {
         margin: 0;
@@ -32,92 +33,115 @@
         overflow: hidden;
       }
 
-      /* ======================
-   SCREENS
-====================== */
+      /* NAV */
+      .nav {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 28px;
+        z-index: 10;
+      }
+      .nav button {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        cursor: pointer;
+      }
+      .nav button:hover {
+        color: white;
+      }
+
+      /* SCREENS */
       .screen {
         position: fixed;
         inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(circle at center, #0d0d0d 0%, #000 65%);
+        background: radial-gradient(circle at center, #101010 0%, #000 70%);
       }
-
       .hidden {
         display: none;
       }
 
-      /* ======================
-   START SCREEN
-====================== */
-      .start {
-        flex-direction: column;
-        text-align: center;
-        padding: 40px;
-      }
-
+      /* TITLES */
       .title {
-        font-size: clamp(2.8rem, 6vw, 5rem);
+        font-size: clamp(3rem, 6vw, 5rem);
         font-weight: 900;
         letter-spacing: -1px;
         background: linear-gradient(180deg, #fff, #777);
         -webkit-background-clip: text;
         color: transparent;
       }
-
       .subtitle {
-        max-width: 520px;
         margin-top: 20px;
+        max-width: 520px;
         line-height: 1.7;
-        font-size: 1.1rem;
         color: #aaa;
       }
 
-      .play-btn {
+      /* BUTTON */
+      .btn {
         margin-top: 40px;
-        padding: 16px 28px;
+        padding: 16px 30px;
         border-radius: 14px;
-        background: linear-gradient(180deg, #1a1a1a, #0b0b0b);
         border: 1px solid #222;
+        background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
         color: white;
-        font-size: 1rem;
         cursor: pointer;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+      }
+      .btn:hover {
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.25);
       }
 
-      /* ======================
-   GAME
-====================== */
+      /* GAME */
       canvas {
         position: fixed;
         inset: 0;
       }
-
-      /* HUD */
       .hud {
         position: fixed;
-        top: 30px;
+        top: 80px;
         left: 50%;
         transform: translateX(-50%);
-        font-weight: 600;
+        font-size: 0.9rem;
         letter-spacing: 1px;
         color: white;
         opacity: 0.85;
       }
 
-      /* Pause */
+      /* DEV BADGE */
+      .dev {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: #111;
+        border: 1px solid #333;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        color: #aaa;
+        display: none;
+      }
+
+      /* PAUSE */
       .pause {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.6);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
         backdrop-filter: blur(6px);
+        background: rgba(0, 0, 0, 0.6);
+        font-size: 2rem;
       }
 
-      /* Mobile Block */
+      /* MOBILE BLOCK */
       .mobile {
         position: fixed;
         inset: 0;
@@ -127,32 +151,26 @@
         justify-content: center;
         text-align: center;
         padding: 40px;
+        z-index: 99;
       }
-
       .mobile h1 {
         background: linear-gradient(180deg, #fff, #666);
         -webkit-background-clip: text;
         color: transparent;
       }
 
-      /* ======================
-   GAME OVER
-====================== */
-      .over {
-        flex-direction: column;
+      /* PAGES */
+      .page {
         text-align: center;
+        padding: 40px;
       }
 
+      /* GAME OVER */
       .over h1 {
         font-size: 4rem;
         background: linear-gradient(180deg, #fff, #777);
         -webkit-background-clip: text;
         color: transparent;
-      }
-
-      .over p {
-        color: #aaa;
-        margin: 20px 0;
       }
     </style>
   </head>
@@ -162,46 +180,102 @@
     <div class="mobile" id="mobile">
       <div>
         <h1>Mobile Support<br />Coming Soon</h1>
-        <p style="color: #777">This experience is crafted for keyboards.</p>
+        <p style="color: #777">Designed for keyboards.</p>
       </div>
     </div>
 
+    <!-- NAV -->
+    <div class="nav">
+      <button onclick="showScreen('start')">Play</button>
+      <button onclick="showScreen('how')">How to Play</button>
+      <button onclick="showScreen('leader')">Leaderboard</button>
+      <button onclick="showScreen('about')">About</button>
+    </div>
+
     <!-- START -->
-    <div class="screen start" id="start">
-      <div class="title">You Evolved.<br />The Serpent Didn’t.</div>
-      <div class="subtitle">
-        Before seasons, passes, and noise — there was instinct. One grid. One
-        hunger. No mercy.
+    <div class="screen" id="start">
+      <div class="page">
+        <div class="title">You Evolved.<br />The Serpent Didn’t.</div>
+        <div class="subtitle">
+          Before progress bars and noise, there was instinct. One grid. One
+          hunger. No mercy.
+        </div>
+        <button class="btn" onclick="startGame()">▶ Play Now</button>
       </div>
-      <button class="play-btn" id="play">▶ Begin</button>
+    </div>
+
+    <!-- HOW TO PLAY -->
+    <div class="screen hidden" id="how">
+      <div class="page">
+        <div class="title">How To Play</div>
+        <div class="subtitle">
+          Use <b>Arrow Keys</b> or <b>WASD</b> to move.<br />
+          Eat to grow. Avoid walls and yourself.<br /><br />
+          <b>ESC / ENTER</b> pauses the game.<br />
+          <b>ENTER / SPACE</b> retries after Game Over.
+        </div>
+        <button class="btn" onclick="showScreen('start')">Back to Play</button>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="screen hidden" id="leader">
+      <div class="page">
+        <div class="title">Leaderboard</div>
+        <div class="subtitle">
+          Global rankings coming soon.<br />
+          For now, beat your own instinct.
+        </div>
+        <button class="btn" onclick="showScreen('start')">Back to Play</button>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="screen hidden" id="about">
+      <div class="page">
+        <div class="title">About Naga</div>
+        <div class="subtitle">
+          Inspired by the legendary Nokia Snake — a game that taught patience,
+          precision, and obsession.<br /><br />
+          Visual inspiration by
+          <a
+            href="https://dribbble.com/melfanzaa"
+            target="_blank"
+            style="color: white"
+          >
+            Elfan
+          </a>
+          on Dribbble.<br /><br />
+          A small tribute to growing up.
+        </div>
+        <button class="btn" onclick="showScreen('start')">Back to Play</button>
+      </div>
     </div>
 
     <!-- GAME -->
     <canvas id="game"></canvas>
-    <div class="hud" id="hud">Score 0 · PR 0</div>
+    <div class="hud" id="hud"></div>
     <div class="pause hidden" id="pause">Paused</div>
+    <div class="dev" id="dev">DEV MODE</div>
 
     <!-- GAME OVER -->
-    <div class="screen over hidden" id="over">
-      <h1>Game Over</h1>
-      <p id="final"></p>
-      <button class="play-btn" onclick="startGame()">Try Again</button>
+    <div class="screen hidden over" id="over">
+      <div class="page">
+        <h1>Game Over</h1>
+        <p id="final" class="subtitle"></p>
+        <button class="btn" onclick="startGame()">Try Again</button>
+      </div>
     </div>
 
     <script>
-      /* ======================
-   MOBILE CHECK
-====================== */
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
+      /* MOBILE BLOCK */
+      if (innerWidth < 768) {
         document.getElementById("mobile").style.display = "flex";
       }
 
-      /* ======================
-   CANVAS
-====================== */
+      /* CANVAS */
       const canvas = document.getElementById("game");
       const ctx = canvas.getContext("2d");
-
       function resize() {
         canvas.width = innerWidth;
         canvas.height = innerHeight;
@@ -209,103 +283,93 @@
       resize();
       addEventListener("resize", resize);
 
-      /* ======================
-   STATE
-====================== */
+      /* STATE */
       const GRID = 24;
-      let snake, dir, food, loop, speed, score;
-      let paused = false;
-
+      let snake,
+        dir,
+        food,
+        loop,
+        speed,
+        score,
+        paused = false,
+        dev = false;
       let pr = Number(localStorage.getItem("naga_pr")) || 0;
 
-      /* ======================
-   START GAME
-====================== */
-      function startGame() {
-        document.getElementById("start").classList.add("hidden");
-        document.getElementById("over").classList.add("hidden");
+      /* SCREENS */
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.add("hidden"));
+        document.getElementById(id).classList.remove("hidden");
+      }
 
+      /* START */
+      function startGame() {
+        showScreen("game");
+        document.getElementById("over").classList.add("hidden");
         snake = [{ x: 12, y: 12 }];
         dir = { x: 1, y: 0 };
         food = spawnFood();
         speed = 120;
         score = 0;
-
+        paused = false;
         clearInterval(loop);
         loop = setInterval(tick, speed);
       }
 
-      /* ======================
-   GAME LOOP
-====================== */
+      /* LOOP */
       function tick() {
         if (paused) return;
-
-        const head = {
-          x: snake[0].x + dir.x,
-          y: snake[0].y + dir.y,
-        };
-
+        const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
         if (head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID)
           return endGame();
         if (snake.some((s) => s.x === head.x && s.y === head.y))
           return endGame();
-
         snake.unshift(head);
-
         if (head.x === food.x && head.y === food.y) {
           score++;
-          speed = Math.max(40, speed - 4);
-          clearInterval(loop);
-          loop = setInterval(tick, speed);
+          if (!dev) {
+            speed = Math.max(40, speed - 4);
+            clearInterval(loop);
+            loop = setInterval(tick, speed);
+          }
           food = spawnFood();
-        } else {
-          snake.pop();
-        }
-
+        } else snake.pop();
         draw();
       }
 
-      /* ======================
-   DRAW
-====================== */
+      /* DRAW */
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         const size = Math.min(canvas.width, canvas.height) / GRID;
         const ox = (canvas.width - size * GRID) / 2;
         const oy = (canvas.height - size * GRID) / 2;
 
-        // GRID + vignette
         for (let x = 0; x < GRID; x++)
           for (let y = 0; y < GRID; y++) {
-            ctx.fillStyle = `rgb(${15 + y},${15 + y},${15 + y})`;
+            ctx.fillStyle = `rgb(${14 + y},${14 + y},${14 + y})`;
             ctx.fillRect(ox + x * size, oy + y * size, size - 1, size - 1);
           }
 
-        // FOOD GLOW
         const fx = ox + food.x * size + size / 2;
         const fy = oy + food.y * size + size / 2;
-        const glow = ctx.createRadialGradient(fx, fy, 0, fx, fy, size * 2);
-        glow.addColorStop(0, "rgba(255,60,60,.8)");
-        glow.addColorStop(1, "transparent");
-        ctx.fillStyle = glow;
+        const g = ctx.createRadialGradient(fx, fy, 0, fx, fy, size * 2);
+        g.addColorStop(0, "rgba(255,60,60,.8)");
+        g.addColorStop(1, "transparent");
+        ctx.fillStyle = g;
         ctx.fillRect(fx - size * 2, fy - size * 2, size * 4, size * 4);
 
-        // SNAKE
         snake.forEach((s, i) => {
           const t = i / snake.length;
           ctx.fillStyle = `rgb(${255 - 120 * t},${255 - 120 * t},${255 - 120 * t})`;
           ctx.fillRect(ox + s.x * size, oy + s.y * size, size - 1, size - 1);
         });
 
-        document.getElementById("hud").textContent =
-          `Score ${score} · PR ${pr}`;
+        document.getElementById("hud").innerText =
+          `Score ${score} · PR ${pr}${dev ? " · DEV" : ""}`;
       }
 
-      /* ======================
-   HELPERS
-====================== */
+      /* HELPERS */
       function spawnFood() {
         let p;
         do {
@@ -325,24 +389,32 @@
         }
         document.getElementById("final").innerText =
           `Score ${score} · Personal Record ${pr}`;
-        document.getElementById("over").classList.remove("hidden");
+        showScreen("over");
       }
 
-      /* ======================
-   INPUT
-====================== */
+      /* INPUT */
       addEventListener("keydown", (e) => {
         if (e.key === "Escape" || e.key === "Enter") {
           paused = !paused;
           document.getElementById("pause").classList.toggle("hidden", !paused);
         }
-        if (e.key === "ArrowUp" && dir.y !== 1) dir = { x: 0, y: -1 };
-        if (e.key === "ArrowDown" && dir.y !== -1) dir = { x: 0, y: 1 };
-        if (e.key === "ArrowLeft" && dir.x !== 1) dir = { x: -1, y: 0 };
-        if (e.key === "ArrowRight" && dir.x !== -1) dir = { x: 1, y: 0 };
+        if (e.key === " ") {
+          if (!document.getElementById("over").classList.contains("hidden"))
+            startGame();
+        }
+        if (e.key.toLowerCase() === "p") {
+          dev = !dev;
+          document.getElementById("dev").style.display = dev ? "block" : "none";
+        }
+        if ((e.key === "ArrowUp" || e.key === "w") && dir.y !== 1)
+          dir = { x: 0, y: -1 };
+        if ((e.key === "ArrowDown" || e.key === "s") && dir.y !== -1)
+          dir = { x: 0, y: 1 };
+        if ((e.key === "ArrowLeft" || e.key === "a") && dir.x !== 1)
+          dir = { x: -1, y: 0 };
+        if ((e.key === "ArrowRight" || e.key === "d") && dir.x !== -1)
+          dir = { x: 1, y: 0 };
       });
-
-      document.getElementById("play").onclick = startGame;
     </script>
   </body>
 </html>
