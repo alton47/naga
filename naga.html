@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAGA</title>
+
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --panel: #0f0f0f;
+        --grid: #161616;
+        --snake: #eaeaea;
+        --food: #ff3b3b;
+        --text: #f5f5f5;
+        --muted: #888;
+        --accent: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: Inter, system-ui, sans-serif;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: radial-gradient(circle at top, #111, #000);
+        color: var(--text);
+      }
+
+      .app {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+
+      .card {
+        width: min(95vw, 520px);
+        background: linear-gradient(180deg, #0c0c0c, #060606);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+
+      .btn {
+        background: linear-gradient(180deg, #1a1a1a, #0e0e0e);
+        color: white;
+        border: 1px solid #222;
+        padding: 12px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        background: #1e1e1e;
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin: 30px 0 10px;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        max-width: 380px;
+        margin: 0 auto 30px;
+        line-height: 1.6;
+      }
+
+      canvas {
+        display: none;
+        width: 100%;
+        background: var(--bg);
+        border-radius: 16px;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        margin: 16px 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app">
+      <div class="card">
+        <div class="header">
+          <div class="logo">NAGA</div>
+          <button id="playBtnTop" class="btn hidden">Play</button>
+        </div>
+
+        <!-- START SCREEN -->
+        <div id="startScreen" class="center">
+          <div class="title">You Grew Up.<br />Snake Didn’t.</div>
+          <div class="subtitle">
+            No loot boxes. No cutscenes.<br />
+            Just you, the grid, and the growing tail.
+          </div>
+          <button id="playBtn" class="btn">▶ Play Now</button>
+        </div>
+
+        <!-- GAME -->
+        <div id="gameScreen" class="hidden">
+          <div class="stats">
+            <div>Score: <span id="score">0</span></div>
+            <div>PR: <span id="pr">0</span></div>
+          </div>
+          <canvas id="game" width="400" height="400"></canvas>
+        </div>
+
+        <!-- GAME OVER -->
+        <div id="gameOverScreen" class="hidden center">
+          <div class="title">Game Over</div>
+          <div class="subtitle">
+            Score: <b id="finalScore">0</b><br />
+            Personal Record: <b id="finalPR">0</b>
+          </div>
+          <button id="retryBtn" class="btn">Try Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ======================
+   CONFIG
+====================== */
+      const GRID = 20;
+      const TILE = 20;
+      const START_SPEED = 120;
+      const SPEED_STEP = 5;
+
+      /* ======================
+   STATE
+====================== */
+      let canvas = document.getElementById("game");
+      let ctx = canvas.getContext("2d");
+
+      let snake, food, dir, loop, speed, score;
+      let pr = Number(localStorage.getItem("naga_pr")) || 0;
+
+      /* FUTURE FEATURE PLACEHOLDER */
+      // let hearts = 3; // <-- continue-after-death system later
+
+      /* ======================
+   UI
+====================== */
+      const startScreen = document.getElementById("startScreen");
+      const gameScreen = document.getElementById("gameScreen");
+      const gameOverScreen = document.getElementById("gameOverScreen");
+
+      const scoreEl = document.getElementById("score");
+      const prEl = document.getElementById("pr");
+      const finalScoreEl = document.getElementById("finalScore");
+      const finalPREl = document.getElementById("finalPR");
+
+      /* ======================
+   GAME SETUP
+====================== */
+      function startGame() {
+        snake = [{ x: 10, y: 10 }];
+        dir = { x: 1, y: 0 };
+        score = 0;
+        speed = START_SPEED;
+        food = spawnFood();
+
+        scoreEl.textContent = score;
+        prEl.textContent = pr;
+
+        startScreen.classList.add("hidden");
+        gameOverScreen.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
+        canvas.style.display = "block";
+
+        clearInterval(loop);
+        loop = setInterval(tick, speed);
+      }
+
+      /* ======================
+   GAME LOOP
+====================== */
+      function tick() {
+        const head = {
+          x: snake[0].x + dir.x,
+          y: snake[0].y + dir.y,
+        };
+
+        // WALL COLLISION
+        if (head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID) {
+          endGame();
+          return;
+        }
+
+        // SELF COLLISION
+        if (snake.some((s) => s.x === head.x && s.y === head.y)) {
+          endGame();
+          return;
+        }
+
+        snake.unshift(head);
+
+        // FOOD
+        if (head.x === food.x && head.y === food.y) {
+          score++;
+          scoreEl.textContent = score;
+          food = spawnFood();
+          speed = Math.max(40, speed - SPEED_STEP);
+          clearInterval(loop);
+          loop = setInterval(tick, speed);
+        } else {
+          snake.pop();
+        }
+
+        draw();
+      }
+
+      /* ======================
+   DRAW
+====================== */
+      function draw() {
+        ctx.fillStyle = "#0a0a0a";
+        ctx.fillRect(0, 0, 400, 400);
+
+        // GRID
+        ctx.fillStyle = "#161616";
+        for (let x = 0; x < GRID; x++) {
+          for (let y = 0; y < GRID; y++) {
+            ctx.fillRect(x * TILE, y * TILE, TILE - 1, TILE - 1);
+          }
+        }
+
+        // FOOD
+        ctx.fillStyle = "#ff3b3b";
+        ctx.fillRect(food.x * TILE, food.y * TILE, TILE - 1, TILE - 1);
+
+        // SNAKE
+        ctx.fillStyle = "#eaeaea";
+        snake.forEach((s, i) => {
+          ctx.fillRect(s.x * TILE, s.y * TILE, TILE - 1, TILE - 1);
+        });
+      }
+
+      /* ======================
+   HELPERS
+====================== */
+      function spawnFood() {
+        let pos;
+        do {
+          pos = {
+            x: Math.floor(Math.random() * GRID),
+            y: Math.floor(Math.random() * GRID),
+          };
+        } while (snake.some((s) => s.x === pos.x && s.y === pos.y));
+        return pos;
+      }
+
+      function endGame() {
+        clearInterval(loop);
+
+        if (score > pr) {
+          pr = score;
+          localStorage.setItem("naga_pr", pr);
+        }
+
+        finalScoreEl.textContent = score;
+        finalPREl.textContent = pr;
+
+        gameScreen.classList.add("hidden");
+        gameOverScreen.classList.remove("hidden");
+      }
+
+      /* ======================
+   INPUT
+====================== */
+      window.addEventListener("keydown", (e) => {
+        const k = e.key;
+        if (k === "ArrowUp" && dir.y !== 1) dir = { x: 0, y: -1 };
+        if (k === "ArrowDown" && dir.y !== -1) dir = { x: 0, y: 1 };
+        if (k === "ArrowLeft" && dir.x !== 1) dir = { x: -1, y: 0 };
+        if (k === "ArrowRight" && dir.x !== -1) dir = { x: 1, y: 0 };
+      });
+
+      /* ======================
+   BUTTONS
+====================== */
+      document.getElementById("playBtn").onclick = startGame;
+      document.getElementById("retryBtn").onclick = startGame;
+
+      /* INIT */
+      prEl.textContent = pr;
+    </script>
+  </body>
+</html>
