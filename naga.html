@@ -2,24 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Sneyk | Minimal</title>
+    <title>Naga | Instinct</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
       :root {
         --bg: #000000;
         --text: #ffffff;
-        --muted: #666;
-        /* Horizontal gradient: White on left, dark grey on right */
-        --title-grad: linear-gradient(90deg, #ffffff 0%, #444444 100%);
+        --muted: #555;
+        --accent: #ff3b3b;
+        --title-grad: linear-gradient(90deg, #ffffff 0%, #333333 100%);
       }
 
       * {
         box-sizing: border-box;
-        font-family:
-          "Inter",
-          system-ui,
-          -apple-system,
-          sans-serif;
+        font-family: "Inter", sans-serif;
       }
 
       body,
@@ -32,20 +28,16 @@
         overflow: hidden;
       }
 
-      /* THE VIGNETTE & DOT GRID */
-      .viewport-wrapper {
+      /* PHOTO-ACCURATE BACKGROUND & VIGNETTE */
+      .bg-layer {
         position: fixed;
         inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         z-index: -1;
-        /* The "Circle" fade from the photo */
         background:
           radial-gradient(
             circle at center,
             transparent 0%,
-            rgba(0, 0, 0, 0.9) 85%
+            rgba(0, 0, 0, 1) 90%
           ),
           url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMxYjFiMWIiLz48L3N2Zz4=");
       }
@@ -56,58 +48,68 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 100px;
+        height: 90px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 80px;
+        padding: 0 60px;
         z-index: 100;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 1) 0%,
+          transparent 100%
+        );
       }
 
       .brand {
         display: flex;
         align-items: center;
         gap: 12px;
-        font-size: 1.6rem;
-        font-weight: 700;
+        font-size: 1.3rem;
+        font-weight: 800;
         letter-spacing: -1px;
       }
 
       .nav-links {
         display: flex;
-        gap: 40px;
+        gap: 30px;
       }
-
       .nav-links button {
         background: none;
         border: none;
         color: var(--muted);
         cursor: pointer;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 500;
-        transition: color 0.3s;
+        transition: 0.3s;
       }
-
       .nav-links button:hover {
         color: #fff;
       }
 
-      .play-btn-nav {
-        background: rgba(255, 255, 255, 0.05);
+      .play-now-btn {
+        background: transparent;
         color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 10px 24px;
-        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-size: 0.85rem;
         font-weight: 600;
         cursor: pointer;
-        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
       }
-
-      /* ================= TITLES (Horizontal Gradient) ================= */
-      .gradient-text {
-        background: var(--title-grad);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      .play-now-btn:hover:not(:disabled) {
+        background: #fff;
+        color: #000;
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+      }
+      .play-now-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
       }
 
       /* ================= SCREENS ================= */
@@ -122,147 +124,150 @@
         padding: 40px;
         z-index: 50;
       }
-
       .hidden {
         display: none !important;
       }
 
       .hero-title {
-        font-size: clamp(3rem, 8vw, 5.5rem);
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
         font-weight: 800;
-        line-height: 1.05;
-        margin-bottom: 24px;
+        line-height: 1.1;
+        margin-bottom: 20px;
         letter-spacing: -2px;
+        background: var(--title-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
 
       .hero-sub {
-        max-width: 580px;
-        color: var(--muted);
-        line-height: 1.7;
-        font-size: 1.1rem;
-        margin-bottom: 48px;
-      }
-
-      .btn-play-hero {
-        background: #fff;
-        color: #000;
-        border: none;
-        padding: 18px 40px;
-        border-radius: 12px;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-
-      .btn-play-hero:hover {
-        transform: scale(1.05);
+        max-width: 500px;
+        color: #666;
+        line-height: 1.6;
+        font-size: 0.95rem;
+        margin-bottom: 40px;
       }
 
       /* ================= GAME ELEMENTS ================= */
+      #game-container {
+        position: absolute;
+        top: 100px; /* Below Navbar */
+        bottom: 40px;
+        left: 40px;
+        right: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
       canvas {
-        position: fixed;
-        inset: 0;
         image-rendering: pixelated;
       }
 
       .hud {
         position: fixed;
-        bottom: 50px;
+        bottom: 30px;
         width: 100%;
         text-align: center;
-        font-size: 0.75rem;
-        color: var(--muted);
+        font-size: 0.7rem;
+        color: #444;
         text-transform: uppercase;
-        letter-spacing: 3px;
+        letter-spacing: 4px;
         z-index: 60;
       }
 
       .pause-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(4px);
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
-        font-weight: 800;
-        letter-spacing: 10px;
-        z-index: 80;
+        z-index: 150;
+      }
+      .pause-text {
+        font-size: 4rem;
+        font-weight: 900;
+        letter-spacing: 15px;
+        margin-bottom: 10px;
       }
 
-      .dev-status {
-        position: fixed;
-        top: 120px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 6px 15px;
-        font-size: 0.7rem;
-        border-radius: 100px;
-        font-weight: 700;
+      .countdown {
+        font-size: 5rem;
+        font-weight: 900;
         color: #fff;
-        z-index: 90;
+      }
+
+      .dev-badge {
+        position: fixed;
+        top: 110px;
+        right: 60px;
+        border: 1px solid #fff;
+        padding: 4px 12px;
+        font-size: 0.6rem;
+        border-radius: 4px;
+        font-weight: 700;
+        z-index: 100;
       }
     </style>
   </head>
   <body>
-    <div class="viewport-wrapper"></div>
+    <div class="bg-layer"></div>
 
     <div class="navbar">
-      <div class="brand">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-          <rect width="8" height="8" x="2" y="2" rx="1.5" />
-          <rect width="8" height="8" x="14" y="14" rx="1.5" />
-        </svg>
-        Sneyk
-      </div>
+      <div class="brand">Naga</div>
       <div class="nav-links">
         <button onclick="showScreen('how')">How to play</button>
         <button onclick="showScreen('leaderboard')">Leaderboard</button>
         <button onclick="showScreen('about')">About</button>
       </div>
-      <button class="play-btn-nav" onclick="startGame()">▶ Play Now</button>
+      <button class="play-now-btn" id="navPlayBtn" onclick="startGame()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        Play Now
+      </button>
     </div>
 
     <div class="screen" id="start">
-      <h1 class="hero-title gradient-text">
-        You Grew Up. Snake<br />Didn't. Play It Again.
-      </h1>
+      <h1 class="hero-title">You Grew Up. Snake<br />Didn't. Play It Again.</h1>
       <p class="hero-sub">
-        Before battle passes, loot boxes, and cinematic cutscenes, there was
-        Snake. No fluff, no noise. Just you, the grid, and the growing tail.
-      </p>
-      <button class="btn-play-hero" onclick="startGame()">▶ Play Now</button>
-    </div>
-
-    <div class="screen hidden" id="how">
-      <h1 class="hero-title gradient-text">How to Play</h1>
-      <p class="hero-sub">
-        Arrows/WASD to move. Eat. Survive.<br /><b>P</b>: Dev Mode (Slow/Fast
-        hacks).<br /><b>ESC/SPACE/ENTER</b>: Simple Pause.
+        No fluff, no noise. Just you, the grid, and the growing tail.
       </p>
       <button
-        class="btn-play-nav"
-        style="color: white"
-        onclick="showScreen('start')"
+        class="play-now-btn"
+        style="padding: 15px 35px"
+        onclick="startGame()"
       >
-        Back
+        ▶ Start Engine
       </button>
     </div>
 
     <div class="screen hidden" id="over">
-      <h1 class="hero-title gradient-text">Game Over</h1>
+      <h1 class="hero-title">Defeat.</h1>
       <p id="final-score" class="hero-sub"></p>
-      <button class="btn-play-hero" onclick="startGame()">Try Again</button>
+      <button
+        class="play-now-btn"
+        style="padding: 15px 35px"
+        onclick="startGame()"
+      >
+        Try Again
+      </button>
     </div>
 
-    <canvas id="game"></canvas>
+    <div id="game-container">
+      <canvas id="game"></canvas>
+    </div>
+
     <div class="hud" id="hud"></div>
-    <div class="pause-overlay hidden" id="pause">PAUSED</div>
-    <div id="dev-tag" class="dev-status hidden">DEV MODE ENABLED</div>
+
+    <div class="pause-overlay hidden" id="pauseOverlay">
+      <div class="pause-text" id="pauseLabel">PAUSED</div>
+      <div class="countdown hidden" id="timer">3</div>
+    </div>
+
+    <div id="dev-tag" class="dev-badge hidden">DEV MODE ENABLED</div>
 
     <script>
       const canvas = document.getElementById("game");
@@ -272,15 +277,20 @@
       let speed = 120;
       let paused = false;
       let devMode = false;
-      let pr = localStorage.getItem("sneyk_pr") || 0;
+      let isCountingDown = false;
+      let pr = localStorage.getItem("naga_pr") || 0;
 
-      // Adjust GRID based on screen size for edge-to-edge feel
-      const GRID_W = 50;
-      const GRID_H = 30;
+      const GRID_X = 40;
+      const GRID_Y = 22;
 
       function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const container = document.getElementById("game-container");
+        const availableW = container.clientWidth;
+        const availableH = container.clientHeight;
+        const cellSize = Math.min(availableW / GRID_X, availableH / GRID_Y);
+
+        canvas.width = cellSize * GRID_X;
+        canvas.height = cellSize * GRID_Y;
       }
       window.addEventListener("resize", resize);
       resize();
@@ -293,13 +303,6 @@
           document.getElementById(id).classList.remove("hidden");
       }
 
-      function spawnFood() {
-        return {
-          x: Math.floor(Math.random() * GRID_W),
-          y: Math.floor(Math.random() * GRID_H),
-        };
-      }
-
       function startGame() {
         showScreen("none");
         snake = [
@@ -308,13 +311,14 @@
           { x: 8, y: 10 },
         ];
         dir = { x: 1, y: 0 };
-        food = spawnFood();
+        food = { x: 20, y: 10 };
         score = 0;
         speed = 120;
         paused = false;
         devMode = false;
-        document.getElementById("pause").classList.add("hidden");
+        document.getElementById("pauseOverlay").classList.add("hidden");
         document.getElementById("dev-tag").classList.add("hidden");
+        document.getElementById("navPlayBtn").disabled = false;
         resetInterval();
       }
 
@@ -324,126 +328,128 @@
       }
 
       function tick() {
-        if (paused) return;
-
+        if (paused || isCountingDown) return;
         const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-
-        // Edge-to-Edge Collision
         if (
           head.x < 0 ||
-          head.x >= GRID_W ||
+          head.x >= GRID_X ||
           head.y < 0 ||
-          head.y >= GRID_H ||
+          head.y >= GRID_Y ||
           snake.some((s) => s.x === head.x && s.y === head.y)
-        ) {
+        )
           return endGame();
-        }
 
         snake.unshift(head);
-
         if (head.x === food.x && head.y === food.y) {
           score++;
           if (!devMode) {
-            speed = Math.max(40, speed - 2);
+            speed = Math.max(50, speed - 2);
             resetInterval();
           }
-          food = spawnFood();
-        } else {
-          snake.pop();
-        }
+          food = {
+            x: Math.floor(Math.random() * GRID_X),
+            y: Math.floor(Math.random() * GRID_Y),
+          };
+        } else snake.pop();
         draw();
       }
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cw = canvas.width / GRID_X;
+        const ch = canvas.height / GRID_Y;
 
-        const size = canvas.width / GRID_W;
-        const offsetH = (canvas.height - size * GRID_H) / 2;
-
-        // 1. Draw Subtle Background Grid
+        // Draw Dot Grid with Spaces
         ctx.fillStyle = "rgba(255,255,255,0.03)";
-        for (let i = 0; i < GRID_W; i++) {
-          for (let j = 0; j < GRID_H; j++) {
-            ctx.fillRect(i * size, offsetH + j * size, size - 1, size - 1);
+        for (let i = 0; i < GRID_X; i++) {
+          for (let j = 0; j < GRID_Y; j++) {
+            ctx.fillRect(i * cw + 2, j * ch + 2, cw - 4, ch - 4);
           }
         }
 
-        // 2. Draw Food (Red Pixel)
+        // Food
         ctx.fillStyle = "#ff3b3b";
-        ctx.fillRect(
-          food.x * size,
-          offsetH + food.y * size,
-          size - 1,
-          size - 1,
-        );
+        ctx.fillRect(food.x * cw + 2, food.y * ch + 2, cw - 4, ch - 4);
 
-        // 3. Draw Snake (GRADIENT FADE BODY)
-        snake.forEach((part, i) => {
-          // Calculate opacity: head is 1, tail approaches 0
-          const opacity = 1 - i / snake.length;
-          ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-          ctx.fillRect(
-            part.x * size,
-            offsetH + part.y * size,
-            size - 1,
-            size - 1,
-          );
+        // Snake with Tail Fade
+        snake.forEach((s, i) => {
+          const opacity = 1 - i / (snake.length + 2);
+          ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+          ctx.fillRect(s.x * cw + 1, s.y * ch + 1, cw - 2, ch - 2);
         });
 
         document.getElementById("hud").innerText =
-          `Score: ${score}  |  Best: ${pr} ${devMode ? ` | DEV SPEED: ${speed}ms` : ""}`;
+          `SCORE ${score}  —  BEST ${pr} ${devMode ? ` — DEV SPEED ${speed}ms` : ""}`;
+      }
+
+      function togglePause(isDev = false) {
+        if (paused) {
+          startCountdown();
+        } else {
+          paused = true;
+          if (isDev) {
+            devMode = true;
+            speed = 400; // Auto-slow for dev
+            resetInterval();
+            document.getElementById("dev-tag").classList.remove("hidden");
+          }
+          document.getElementById("pauseOverlay").classList.remove("hidden");
+          document.getElementById("pauseLabel").classList.remove("hidden");
+          document.getElementById("timer").classList.add("hidden");
+          document.getElementById("navPlayBtn").disabled = true;
+        }
+      }
+
+      function startCountdown() {
+        isCountingDown = true;
+        document.getElementById("pauseLabel").classList.add("hidden");
+        const timerEl = document.getElementById("timer");
+        timerEl.classList.remove("hidden");
+        let count = 3;
+        timerEl.innerText = count;
+
+        const interval = setInterval(() => {
+          count--;
+          if (count > 0) {
+            timerEl.innerText = count;
+          } else {
+            clearInterval(interval);
+            paused = false;
+            isCountingDown = false;
+            document.getElementById("pauseOverlay").classList.add("hidden");
+            document.getElementById("navPlayBtn").disabled = false;
+            resetInterval();
+          }
+        }, 600);
       }
 
       function endGame() {
         clearInterval(loop);
         if (score > pr) {
           pr = score;
-          localStorage.setItem("sneyk_pr", pr);
+          localStorage.setItem("naga_pr", pr);
         }
         document.getElementById("final-score").innerText =
-          `Score ${score} · Personal Record ${pr}`;
+          `Score ${score} · Best ${pr}`;
         showScreen("over");
       }
 
       window.addEventListener("keydown", (e) => {
         const k = e.key.toLowerCase();
+        if (k === "p") togglePause(true);
+        if (k === "escape" || k === " " || k === "enter") togglePause(false);
 
-        // P: SPECIAL DEV PAUSE
-        if (k === "p") {
-          devMode = !devMode;
-          paused = devMode;
-          document.getElementById("pause").classList.toggle("hidden", !paused);
-          document
-            .getElementById("dev-tag")
-            .classList.toggle("hidden", !devMode);
-          draw();
-        }
-
-        // Standard Player Pause
-        if (k === "escape" || k === " " || k === "enter") {
-          if (document.getElementById("start").classList.contains("hidden")) {
-            paused = !paused;
-            document
-              .getElementById("pause")
-              .classList.toggle("hidden", !paused);
+        if (devMode && !paused) {
+          if (k === "[") {
+            speed += 50;
+            resetInterval();
+          }
+          if (k === "]") {
+            speed = Math.max(10, speed - 50);
+            resetInterval();
           }
         }
 
-        // Dev Mode Speed Hacks
-        if (devMode) {
-          if (k === "[") {
-            speed += 20;
-            resetInterval();
-            draw();
-          } // Make slower
-          if (k === "]") {
-            speed = Math.max(10, speed - 20);
-            resetInterval();
-            draw();
-          } // Make faster
-        }
-
-        // Movement
         if ((k === "arrowup" || k === "w") && dir.y === 0)
           dir = { x: 0, y: -1 };
         if ((k === "arrowdown" || k === "s") && dir.y === 0)
