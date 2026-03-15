@@ -256,7 +256,7 @@
       let baseSpeed = 120;
       let currentSpeed = 120;
       let paused = false;
-      let pCycle = 0; // 0: Normal, 1: Slomo, 2: Mid, 3: Normal
+      let pCycle = 0;
       let isCountingDown = false;
       let eatFlash = 0;
       let pr = localStorage.getItem("naga_pr") || 0;
@@ -366,7 +366,6 @@
             ctx.fillRect(i * cw + 2, j * ch + 2, cw - 4, ch - 4);
           }
         }
-
         ctx.shadowBlur = 15;
         ctx.shadowColor = "red";
         ctx.fillStyle = "#ff3b3b";
