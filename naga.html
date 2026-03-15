@@ -367,18 +367,16 @@
           }
         }
 
-        // Food with Glow
         ctx.shadowBlur = 15;
         ctx.shadowColor = "red";
         ctx.fillStyle = "#ff3b3b";
         ctx.fillRect(food.x * cw + 2, food.y * ch + 2, cw - 4, ch - 4);
         ctx.shadowBlur = 0;
 
-        // Snake with Tail Fade
         snake.forEach((s, i) => {
           const opacity = 1 - i / (snake.length + 5);
           ctx.fillStyle = i === 0 ? "#fff" : `rgba(255,255,255,${opacity})`;
-          // Head grows slightly when eating
+
           const padding = i === 0 && eatFlash > 0 ? 0 : 2;
           ctx.fillRect(
             s.x * cw + padding,
